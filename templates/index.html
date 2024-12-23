@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Art Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.css" rel="stylesheet">
+</head>
+<body>
+    <div class="background-decoration"></div>
+    <div class="header">
+        <h1>Pixel Art Generator</h1>
+        <div class="header-controls">
+            <button id="darkModeToggle" title="Toggle Dark Mode (Ctrl+D)">
+                <i data-feather="moon"></i>
+            </button>
+            <button id="keyboardShortcuts" title="Keyboard Shortcuts">
+                <i data-feather="settings"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="controls">
+            <!-- Base Image Settings -->
+            <div class="control-group image-controls">
+                <h3>Base Image Settings</h3>
+                <div class="pinned-images-section">
+                    <h4>Pinned Images</h4>
+                    <div id="pinnedImagesList" class="pinned-images-grid">
+                        <!-- Pinned images will be added here -->
+                    </div>
+                </div>
+                <div class="upload-section">
+                    <label for="imageInput" class="upload-btn" title="Upload Image (U)">
+                        <i data-feather="upload"></i> Choose Image
+                    </label>
+                    <input type="file" id="imageInput" accept="image/*" />
+                    <button id="pinCurrentImage" class="secondary-button" title="Pin Current Image (I)" style="display: none;">
+                        <i data-feather="star"></i> Pin Image
+                    </button>
+                </div>
+                <div class="slider-section">
+                    <label for="pixelSizeSlider">Pixelation Level (P/O)</label>
+                    <div class="slider-controls">
+                        <button id="decreasePixelSize" title="Decrease Pixelation (O)">-</button>
+                        <input type="range" id="pixelSizeSlider" min="1" max="50" value="10">
+                        <button id="increasePixelSize" title="Increase Pixelation (P)">+</button>
+                        <input type="number" id="pixelSizeInput" min="1" max="50" value="10">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Base Image Frame Management -->
+            <div class="control-group frame-controls">
+                <h3>Base Image Frames</h3>
+                <button id="addFrameBtn" title="Add Frame (F)" class="primary-button">
+                    <i data-feather="plus-square"></i> Add Frame
+                </button>
+                
+                <div class="auto-frame-controls">
+                    <div class="input-group">
+                        <label>Start: <input type="number" id="startValue" min="1" max="50" value="1"></label>
+                        <label>End: <input type="number" id="endValue" min="1" max="50" value="10"></label>
+                        <label>Step: <input type="number" id="stepValue" min="1" max="50" value="1"></label>
+                    </div>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="autoReverseToggle"> Auto-Reverse
+                    </label>
+                    <button id="autoAddFramesBtn" title="Auto Add Frames (A)" class="secondary-button">
+                        <i data-feather="layers"></i> Auto Add Frames
+                    </button>
+                </div>
+            </div>
+
+            <!-- Overlay Image Settings -->
+            <div class="control-group overlay-controls">
+                <h3>Overlay Image</h3>
+                <div class="overlay-preview">
+                    <h4>Preview</h4>
+                    <div class="overlay-image-container">
+                        <canvas id="overlayPreview"></canvas>
+                    </div>
+                </div>
+                <div class="upload-section">
+                    <label for="overlayInput" class="upload-btn" title="Upload Overlay (O)">
+                        <i data-feather="image"></i> Choose Overlay
+                    </label>
+                    <input type="file" id="overlayInput" accept="image/png" />
+                </div>
+            </div>
+
+            <!-- Overlay Frame Management -->
+            <div class="control-group overlay-frame-controls">
+                <h3>Overlay Frames</h3>
+                <div class="opacity-controls">
+                    <div class="input-group">
+                        <label>Start Opacity: <input type="number" id="opacityStart" min="0" max="100" value="100">%</label>
+                        <label>End Opacity: <input type="number" id="opacityEnd" min="0" max="100" value="0">%</label>
+                    </div>
+                    <div class="auto-frame-controls">
+                        <div class="input-group">
+                            <label>Steps: <input type="number" id="overlaySteps" min="1" max="50" value="10"></label>
+                        </div>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="overlayAutoReverseToggle"> Auto-Reverse
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="removeWhiteBackground" checked> Remove White Background
+                        </label>
+                        <button id="generateOverlayFrames" class="secondary-button" title="Generate Overlay Frames (V)">
+                            <i data-feather="layers"></i> Add Overlay Frames
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group animation-controls">
+                <h3>Animation Settings</h3>
+                <label>Animation FPS (K/L)</label>
+                <div class="slider-controls">
+                    <button id="decreaseFps" title="Decrease FPS (K)">-</button>
+                    <input type="range" id="fpsSlider" min="1" max="60" value="10">
+                    <button id="increaseFps" title="Increase FPS (L)">+</button>
+                    <input type="number" id="fpsInput" min="1" max="60" value="10">
+                </div>
+                
+                <label>Interpolation Quality</label>
+                <div class="slider-controls">
+                    <button id="decreaseInterpolation">-</button>
+                    <input type="range" id="interpolationSlider" min="0" max="10" value="5">
+                    <button id="increaseInterpolation">+</button>
+                    <input type="number" id="interpolationInput" min="0" max="10" value="5">
+                </div>
+                <small class="helper-text">Higher values create smoother animations but increase file size</small>
+                
+                <button id="playAnimationBtn" title="Play/Stop Animation (Space)" class="primary-button">
+                    <i data-feather="play"></i> Play Animation
+                </button>
+            </div>
+
+            <div class="control-group export-controls">
+                <h3>Export Options</h3>
+                <div class="button-grid">
+                    <button id="downloadBtn" title="Save Frame (S)" class="secondary-button">
+                        <i data-feather="download"></i> Save Frame
+                    </button>
+                    <button id="saveOverlayBtn" title="Save Overlay with Transparency (T)" class="secondary-button">
+                        <i data-feather="image"></i> Save Overlay
+                    </button>
+                    <button id="saveGifBtn" title="Save as GIF (G)" class="secondary-button">
+                        <i data-feather="film"></i> Save GIF
+                    </button>
+                    <button id="generateSpriteSheetBtn" title="Generate Sprite Sheet (H)" class="secondary-button">
+                        <i data-feather="grid"></i> Generate Sheet
+                    </button>
+                </div>
+                <div class="danger-zone">
+                    <h3>Danger Zone</h3>
+                    <div class="button-grid">
+                        <button id="clearSpriteSheetBtn" class="warning" title="Clear Frames">
+                            <i data-feather="trash-2"></i> Clear Frames
+                        </button>
+                        <button id="resetAllBtn" class="danger" title="Reset All">
+                            <i data-feather="refresh-cw"></i> Reset All
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="canvas-grid">
+            <div class="canvas-container">
+                <p class="canvas-label">Original Image</p>
+                <canvas id="originalCanvas"></canvas>
+            </div>
+            <div class="canvas-container">
+                <p class="canvas-label">Pixelated Image</p>
+                <canvas id="pixelCanvas"></canvas>
+            </div>
+            <div class="canvas-container">
+                <p class="canvas-label">Animation Preview</p>
+                <canvas id="animationCanvas"></canvas>
+            </div>
+        </div>
+
+        <div class="sprite-sheet-container">
+            <div id="loadingIndicator" class="loading">
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="progress-info">
+                    <span class="progress-text">Processing: <span id="progressText">0%</span></span>
+                    <button id="cancelProcessing" class="danger-button">Cancel</button>
+                </div>
+            </div>
+            <canvas id="spriteSheet"></canvas>
+        </div>
+    </div>
+
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script> -->
+        <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <!-- <script src="{{ url_for('static', filename='js/gif_exporter.js') }}"></script> -->
+    <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>
+    </body>
+    </html>
