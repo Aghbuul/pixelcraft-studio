@@ -17,36 +17,37 @@ A web-based pixel art creation and animation suite with advanced overlay and fra
 
 ## Usage
 
-Upload an image using the 'Choose Image' button
-Adjust pixelation level using the slider
-Add frames manually or use auto-frame generation
-Add overlays if desired
-Preview your animation
-Export as individual frames, webm video, or sprite sheet
+- Upload an image using the 'Choose Image' button
+- Adjust pixelation level using the slider
+- Add frames manually or use auto-frame generation
+- Add overlays if desired
+- Preview your animation
+- Export as individual frames, webm video, or sprite sheet
 
 ## Keyboard Shortcuts
 
-U: Upload Image
-O: Decrease Pixelation
-P: Increase Pixelation
-F: Add Frame
-A: Auto Add Frames
-K: Decrease FPS
-L: Increase FPS
-S: Save Frame
-H: Generate Sheet
-Space: Play/Pause Animation
-T: Toggle Dark Mode
-I: Pin Current Image
+- U: Upload Image
+- O: Decrease Pixelation
+- P: Increase Pixelation
+- F: Add Frame
+- A: Auto Add Frames
+- K: Decrease FPS
+- L: Increase FPS
+- S: Save Frame
+- H: Generate Sheet
+- Space: Play/Pause Animation
+- T: Toggle Dark Mode
+- I: Pin Current Image
 
 ## Technologies Used
 
-Python (Flask)
-JavaScript
-HTML5 Canvas
-Feather Icons
+- Python (Flask)
+- JavaScript
+- HTML5 Canvas
+- Feather Icons
 
 ## Acknowledgements
 
-Feather Icons for the UI icons
-Flask framework for the backend server
+- Feather Icons for the UI icons
+- Flask framework for the backend server
+- GIF.js library for handling GIF creation and export
