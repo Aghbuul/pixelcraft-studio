@@ -51,3 +51,5 @@ A web-based pixel art creation and animation suite with advanced overlay and fra
 - Feather Icons for the UI icons
 - Flask framework for the backend server
 - GIF.js library for handling GIF creation and export
+
+## This project was developed with the (heavy) assistance of Replit Agent, Anthropic's Claude and OpenAI's ChatGPT. The background art for this project was generated using Google's Veo 2.
