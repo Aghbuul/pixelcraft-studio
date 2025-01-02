@@ -10,6 +10,7 @@ const controls = {
         decrease: document.getElementById('decreasePixelSize'),
         increase: document.getElementById('increasePixelSize')
     },
+    
     fps: {
         slider: document.getElementById('fpsSlider'),
         input: document.getElementById('fpsInput'),
@@ -27,6 +28,11 @@ const controls = {
 let frames = [];
 let animationRunning = false;
 let currentImage = null;
+
+// Add these default settings
+document.getElementById('removeWhiteBackground').checked = false;
+document.getElementById('autoReverseToggle').checked = true;
+document.getElementById('overlayAutoReverseToggle').checked = true;
 
 // Initialize canvases
 const originalCanvas = document.getElementById('originalCanvas');
@@ -218,8 +224,8 @@ document.getElementById('resetAllBtn').addEventListener('click', () => {
     imageInput.value = '';
 
     // Reset all controls to default values
-    controls.pixelSize.slider.value = 10;
-    controls.pixelSize.input.value = 10;
+    controls.pixelSize.slider.value = 1;
+    controls.pixelSize.input.value = 1;
     controls.fps.slider.value = 10;
     controls.fps.input.value = 10;
 
@@ -314,11 +320,11 @@ const defaultShortcuts = {
 document.getElementById('keyboardShortcuts').addEventListener('click', () => {
     const dialog = document.createElement('dialog');
     dialog.innerHTML = `
-        <div style="padding: 2rem;">
+        <div>
             <h3>Keyboard Shortcuts</h3>
-            <div style="margin: 1rem 0; max-height: 400px; overflow-y: auto;">
+            <div class="shortcut-item-list" style="padding-right: 40px; overflow-y: auto;">
                 ${Object.entries(defaultShortcuts).map(([action, config]) => `
-                    <div style="margin: 0.5rem 0; display: flex; justify-content: space-between; align-items: center;">
+                    <div class="shortcut-item">
                         <span>${config.description}</span>
                         <kbd>${config.key === ' ' ? 'Space' : config.key.toUpperCase()}</kbd>
                     </div>
@@ -327,8 +333,58 @@ document.getElementById('keyboardShortcuts').addEventListener('click', () => {
             <button onclick="this.closest('dialog').close()" class="primary-button">Close</button>
         </div>
     `;
+    
     document.body.appendChild(dialog);
     dialog.showModal();
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT') return;
+
+    switch(e.key.toLowerCase()) {
+        case 'u':
+            document.getElementById('imageInput').click();
+            break;
+        case 'o':
+            document.getElementById('decreasePixelSize').click();
+            break;
+        case 'p':
+            document.getElementById('increasePixelSize').click();
+            break;
+        case 'f':
+            document.getElementById('addFrameBtn').click();
+            break;
+        case 'a':
+            document.getElementById('autoAddFramesBtn').click();
+            break;
+        case 'k':
+            document.getElementById('decreaseFps').click();
+            break;
+        case 'l':
+            document.getElementById('increaseFps').click();
+            break;
+        case 's':
+            document.getElementById('downloadBtn').click();
+            break;
+        case 'g':
+            document.getElementById('saveGifBtn').click();
+            break;
+        case 'h':
+            document.getElementById('generateSpriteSheetBtn').click();
+            break;
+        case ' ':
+            e.preventDefault();
+            document.getElementById('playAnimationBtn').click();
+            break;
+        case 't':
+            document.getElementById('darkModeToggle').click();
+            break;
+        case 'i':
+            if (document.getElementById('pinCurrentImage').style.display !== 'none') {
+                document.getElementById('pinCurrentImage').click();
+            }
+            break;
+    }
 });
 
 // Overlay functionality
@@ -532,13 +588,60 @@ document.getElementById('saveOverlayBtn').addEventListener('click', () => {
 });
 
 
+//Adding a button for custom keyboard shortcuts.  This is inferred from the user request and not explicitly in the changes.
+const shortcutButton = document.createElement('button');
+shortcutButton.id = 'customShortcuts';
+shortcutButton.textContent = 'Custom Shortcuts';
+shortcutButton.addEventListener('click', () => {
+    const customShortcutDialog = document.createElement('dialog');
+    customShortcutDialog.innerHTML = `
+        <div style="padding: 2rem;">
+            <h3>Custom Shortcuts</h3>
+            <div id="shortcutsList">
+                ${Object.entries(defaultShortcuts).map(([action, config]) => `
+                    <div class="shortcut-item">
+                        <span>${config.description}</span>
+                        <input type="text" 
+                               data-action="${action}" 
+                               value="${config.key}" 
+                               maxlength="1">
+                    </div>
+                `).join('')}
+            </div>
+            <button onclick="this.closest('dialog').close()" class="primary-button">Save</button>
+        </div>
+    `;
 
+    document.body.appendChild(customShortcutDialog);
+    shortcutButton.addEventListener('click', () => customShortcutDialog.showModal());
+
+    const shortcutInputs = customShortcutDialog.querySelectorAll('input');
+    shortcutInputs.forEach(input => {
+        input.addEventListener('keydown', (e) => {
+            e.preventDefault();
+            const key = e.key.toLowerCase();
+            input.value = key;
+            defaultShortcuts[input.dataset.action].key = key;
+        });
+    });
+});
 
 //Find the dark mode toggle and add the button next to it.  This assumes the dark mode toggle has a parent element.
 const darkModeToggle = document.getElementById('darkModeToggle');
 if (darkModeToggle && darkModeToggle.parentElement) {
     darkModeToggle.parentElement.appendChild(shortcutButton);
 }
+
+// Background rotation
+const backgrounds = [
+    '/static/images/background1.jpg',
+    '/static/images/background2.jpg',
+    '/static/images/background3.jpg',
+    '/static/images/background4.jpg'
+];
+
+const randomBackground = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+document.querySelector('.background-decoration').style.backgroundImage = `url(${randomBackground})`;
 
 
 //Export functions (reintegrated from original code)
